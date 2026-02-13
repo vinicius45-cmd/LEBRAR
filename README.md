@@ -1,3 +1,27 @@
+para estudo (GEMINI)
+
+SELECT 
+    t.nm_operadora,
+    tl.cd_linha,
+    COUNT(tv.id_viagem) AS total_viagens_dia
+FROM 
+    dados_mobilidade.tab_linha tl
+JOIN 
+    dados_mobilidade.tab_operadora_linha tol ON tl.id_linha = tol.id_linha
+JOIN 
+    dados_mobilidade.tab_operadora t ON tol.id_operadora = t.id_operadora
+LEFT JOIN 
+    dados_mobilidade.tab_viagem tv ON tl.id_linha = tv.id_linha
+GROUP BY 
+    t.nm_operadora, 
+    tl.cd_linha
+ORDER BY 
+    total_viagens_dia DESC; -- Mostra primeiro as linhas mais frequentes
+
+
+
+
+
 # LEBRAR
 Lembrar de códigos que podem ser uteis no futuro
 select
