@@ -22,6 +22,27 @@ ORDER BY
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # LEBRAR
 Lembrar de códigos que podem ser uteis no futuro
 select
@@ -267,3 +288,212 @@ GROUP BY
     tl.tx_linha
 HAVING 
     COUNT(tol.id_operadora) > 1;
+
+
+
+
+
+
+
+
+
+-- exercício N
+select ti.geo_linhas_lin,
+    tl.cd_linha,
+    ti.lin_sentido,
+    ti.id_itinerario
+FROM 
+    dados_mobilidade.tab_itinerario ti
+JOIN 
+    dados_mobilidade.tab_linha tl
+    ON ti.id_linha = tl.id_linha
+WHERE 
+    tl.cd_linha = '0.170'
+ORDER BY 
+    ti.lin_sentido;
+
+
+
+
+
+
+
+
+
+
+-- exercício O
+SELECT 
+    tl.cd_linha, 
+    tl.tx_linha 
+FROM 
+    dados_mobilidade.tab_linha tl
+WHERE
+    tl.tx_linha ilike '%Eixo Monumental%';
+
+
+
+
+
+
+
+
+
+-- exercício P
+SELECT 
+    tl.cd_linha, 
+    tl.tx_linha,
+    (LENGTH(tx_linha) - LENGTH(REPLACE(tx_linha, '/', '')) + 1) AS total_trechos
+FROM 
+    dados_mobilidade.tab_linha tl
+WHERE 
+    tl.cd_linha = '0.111';
+
+
+
+
+
+
+
+
+
+-- exercício Q
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- exercício R
+select
+	tl.cd_linha,
+	th.hr_prevista,
+	th.domingo
+from
+	dados_mobilidade.tab_horario th
+join 
+	dados_mobilidade.tab_operadora_linha tol
+	on th.id_operadora_linha = tol.id_operadora_linha
+join
+	dados_mobilidade.tab_linha tl
+	on tol.id_linha = tl.id_linha
+where
+	tl.cd_linha = '0.763'
+	
+	
+	
+	
+	
+	
+	
+	
+
+-- exercício S
+select 
+	count(th.sabado),
+	t.nm_operadora
+from 
+	dados_mobilidade.tab_horario th
+join 
+    dados_mobilidade.tab_operadora_linha tol
+	on tol.id_operadora_linha = th.id_operadora_linha
+join
+    dados_mobilidade.tab_operadora t
+    on t.id_operadora = tol.id_operadora
+where 
+    th.sabado ilike 'S'
+group by
+    th.sabado,
+    t.nm_operadora
+	
+	
+	
+	
+	
+	
+	
+	
+
+    
+    -- exercício T
+   select
+	tvr.linha,
+	COUNT(tvr.viagem) as qtd
+from 
+	dados_mobilidade.tab_viagens_realizada tvr 
+group by
+	tvr.linha,
+	tvr.viagem
+order by qtd desc
+limit 
+	1
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+-- exercício U
+select
+	tl.cd_linha,
+	max(th.tempo_percurso) as viagem_mais_longa
+from
+	dados_mobilidade.tab_horario th
+join
+	dados_mobilidade.tab_operadora_linha tol
+	on tol.id_operadora_linha = th.id_operadora_linha
+join
+	dados_mobilidade.tab_linha tl
+	on tl.id_linha =  tol.id_linha
+group by
+    tl.cd_linha
+order by
+	viagem_mais_longa desc
+limit
+	1;
+
+
+
+
+
+
+
+
+
+
+-- exercício V
+select
+	tl.cd_linha,
+	tl.tx_linha,
+	th.hr_prevista
+from 
+    dados_mobilidade.tab_horario th
+join 
+    dados_mobilidade.tab_operadora_linha t
+    on th.id_operadora_linha = t.id_operadora_linha 
+join
+	dados_mobilidade.tab_linha tl
+	on t.id_linha = tl.id_linha
+where
+	th.hr_prevista between 0 and 4
+group by
+	tl.cd_linha,
+	tl.tx_linha,
+	th.hr_prevista
+order by
+    th.hr_prevista desc
