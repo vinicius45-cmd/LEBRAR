@@ -26,11 +26,50 @@ ORDER BY
 
 
 
+/**SELECT column_name, data_type 
+FROM information_schema.columns 
+WHERE table_name = 'tab_itinerario' AND column_name = 'id_linha';**/
+
+
+/**SELECT column_name, data_type 
+FROM information_schema.columns 
+WHERE table_name = 'tab_itinerario';**/
+
+
+/**SELECT 
+    (SELECT ST_SRID(geom_parada) FROM dados_mobilidade.tab_parada LIMIT 1) as srid_parada,
+    (SELECT ST_SRID(geo_regiao_administrativa) FROM bdf.tab_regioes_administrativas LIMIT 1) as srid_ra;**/
+
+
+
+SELECT table_name 
+FROM information_schema.tables 
+WHERE table_schema = 'dados_mobilidade';
 
 
 
 
 
+
+
+
+
+
+
+
+select ti.geo_linhas_lin,
+    tl.cd_linha,
+    ti.lin_sentido,
+    ti.id_itinerario
+FROM 
+    dados_mobilidade.tab_itinerario ti
+JOIN 
+    dados_mobilidade.tab_linha tl
+    ON ti.id_linha = tl.id_linha
+WHERE 
+    tl.cd_linha = '0.170'
+ORDER BY 
+    ti.lin_sentido;
 
 
 
@@ -497,3 +536,87 @@ group by
 	th.hr_prevista
 order by
     th.hr_prevista desc
+
+
+
+
+
+
+
+
+Consultas Espaciais e Georeferenciamento (SQL/Postgis)
+
+
+
+-- exercício B
+select 
+    p.id AS parada_id, 
+    p.cod_dftrans, 
+    i.lin_sentido,
+    p.geom_parada
+FROM 
+    dados_mobilidade.tab_parada p
+JOIN 
+    dados_mobilidade.tab_itinerario i 
+    ON ST_DWithin(p.geom_parada, i.geo_linhas_lin, 0.0005)
+JOIN 
+    dados_mobilidade.tab_linha l 
+    ON i.id_linha = l.id_linha
+WHERE 
+    l.cd_linha = '0.763'
+ORDER BY 
+    i.lin_sentido, 
+    ST_LineLocatePoint(i.geo_linhas_lin, p.geom_parada);
+
+
+
+
+
+
+
+
+
+
+
+-- exercício C
+WITH ra_preparada AS (
+    SELECT 
+        dsc_regiao_administrativa,
+        ST_Transform(geo_regiao_administrativa, (SELECT ST_SRID(geom_parada) FROM dados_mobilidade.tab_parada LIMIT 1)) AS geom_ajustada
+    FROM 
+        bdf.tab_regioes_administrativas
+)
+SELECT 
+    COALESCE(ra.dsc_regiao_administrativa, 'TOTAL GERAL') AS regiao_administrativa, 
+    COUNT(p.id) AS total_paradas
+FROM 
+    ra_preparada ra
+LEFT JOIN 
+    dados_mobilidade.tab_parada p 
+    ON ST_Intersects(p.geom_parada, ra.geom_ajustada)
+GROUP BY 
+    ROLLUP(ra.dsc_regiao_administrativa)
+ORDER BY 
+    total_paradas ASC;
+
+                       OU
+                       
+WITH ra_preparada AS (
+    SELECT 
+        dsc_regiao_administrativa,
+        ST_Transform(geo_regiao_administrativa, (SELECT ST_SRID(geom_parada) FROM dados_mobilidade.tab_parada LIMIT 1)) AS geom_ajustada
+    FROM 
+        bdf.tab_regioes_administrativas
+)
+SELECT 
+    ra.dsc_regiao_administrativa AS regiao_administrativa, 
+    COUNT(p.id) AS total_paradas
+FROM 
+    ra_preparada ra
+LEFT JOIN 
+    dados_mobilidade.tab_parada p 
+    ON ST_Intersects(p.geom_parada, ra.geom_ajustada)
+GROUP BY 
+    ra.dsc_regiao_administrativa
+ORDER BY 
+    total_paradas DESC;
