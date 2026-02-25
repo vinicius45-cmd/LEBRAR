@@ -1,3 +1,37 @@
+PS C:\Users\01009683819\projeto_react> cd .\projeto_mapa_tematico\
+PS C:\Users\01009683819\projeto_react\projeto_mapa_tematico> npm run dev
+
+> projeto_mapa_tematico@0.0.0 dev
+> vite
+
+Port 5173 is in use, trying another one...
+
+  VITE v7.3.1  ready in 451 ms      
+
+  ➜  Local:   http://localhost:5174/
+  ➜  Network: use --host to expose  
+  ➜  press h + enter to show help   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 para estudo (GEMINI)
 
 SELECT 
