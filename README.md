@@ -1,16 +1,107 @@
-PS C:\Users\01009683819\projeto_react> cd .\projeto_mapa_tematico\
-PS C:\Users\01009683819\projeto_react\projeto_mapa_tematico> npm run dev
+require('dotenv').config()
+const express = require('express')
+const cors = require('cors')
+const { Pool } = require('pg')
 
-> projeto_mapa_tematico@0.0.0 dev
-> vite
+const app = express()
 
-Port 5173 is in use, trying another one...
+app.use(cors())
+app.use(express.json())
 
-  VITE v7.3.1  ready in 451 ms      
+// Conexão PostgreSQL
+const pool = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  ssl: false // se for servidor externo pode precisar { rejectUnauthorized: false }
+})
 
-  ➜  Local:   http://localhost:5174/
-  ➜  Network: use --host to expose  
-  ➜  press h + enter to show help   
+// Testar conexão
+pool.connect()
+  .then(client => {
+    console.log('Conectado ao PostgreSQL com sucesso!')
+    client.release()
+  })
+  .catch(err => {
+    console.error('Erro ao conectar no banco:', err.message)
+  })
+
+// Rota exemplo
+app.get('/', async (req, res) => {
+  try {
+    const result = await pool.query(`
+SELECT 
+    tl.cd_linha, 
+    tl.tx_linha, 
+    tl.geo_linhas_lin
+    (
+        FROM
+            dados_mobilidade.tab_linhas
+        `)
+    res.json(result.rows)
+  } catch (err) {
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.listen(process.env.PORT, () => {
+  console.log(`Servidor rodando na porta ${process.env.PORT}`)
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
