@@ -4,11 +4,11 @@
 
 **A. Liste as linhas de ônibus, com o nome e número da linha**
 
-select
+'''select
     tx_linha,
     cd_linha
 from 
-	dados_mobilidade.tab_linha
+	dados_mobilidade.tab_linha'''
 
 --------------------------------------------------------------------------------------------------------
 
