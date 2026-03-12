@@ -337,6 +337,8 @@ order by
 
 **A. O que é a extensão postgis ?**
 
+O PostGIS é uma extensão de código aberto para o banco de dados relacional PostgreSQL. Ele é o que transforma um banco de dados comum em um Banco de Dados Espacial.
+
 --------------------------------------------------------------------------------------------------------
 
 **B. Quais paradas de ônibus que servem à linha 0.763, por sentido ?**
