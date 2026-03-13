@@ -368,13 +368,13 @@ ORDER BY
 ```sql
 WITH ra_preparada AS (
     SELECT 
-        dsc_regiao_administrativa,
-        ST_Transform(geo_regiao_administrativa, (SELECT ST_SRID(geom_parada) FROM dados_mobilidade.tab_parada LIMIT 1)) AS geom_ajustada
+        ra.ra_nome,
+        ST_Transform(ra.geom, (SELECT ST_SRID(geom_parada) FROM dados_mobilidade.tab_parada LIMIT 1)) AS geom_ajustada
     FROM 
-        bdf.tab_regioes_administrativas
+        camadas_espaciais.regioes_administrativas ra
 )
 SELECT 
-    COALESCE(ra.dsc_regiao_administrativa, 'TOTAL GERAL') AS regiao_administrativa, 
+    COALESCE(ra.ra_nome, 'TOTAL GERAL') AS regiao_administrativa, 
     COUNT(p.id) AS total_paradas
 FROM 
     ra_preparada ra
@@ -382,33 +382,9 @@ LEFT JOIN
     dados_mobilidade.tab_parada p 
     ON ST_Intersects(p.geom_parada, ra.geom_ajustada)
 GROUP BY 
-    ROLLUP(ra.dsc_regiao_administrativa)
+    ROLLUP(ra.ra_nome)
 ORDER BY 
     total_paradas ASC;
-```
-
-**OU**
-
-```sql     
-WITH ra_preparada AS (
-    SELECT 
-        dsc_regiao_administrativa,
-        ST_Transform(geo_regiao_administrativa, (SELECT ST_SRID(geom_parada) FROM dados_mobilidade.tab_parada LIMIT 1)) AS geom_ajustada
-    FROM 
-        bdf.tab_regioes_administrativas
-)
-SELECT 
-    ra.dsc_regiao_administrativa AS regiao_administrativa, 
-    COUNT(p.id) AS total_paradas
-FROM 
-    ra_preparada ra
-LEFT JOIN 
-    dados_mobilidade.tab_parada p 
-    ON ST_Intersects(p.geom_parada, ra.geom_ajustada)
-GROUP BY 
-    ra.dsc_regiao_administrativa
-ORDER BY 
-    total_paradas DESC;
 ```
 --------------------------------------------------------------------------------------------------------
 
